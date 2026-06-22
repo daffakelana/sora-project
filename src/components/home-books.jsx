@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { BookOpenText, ImagePlus, Plus, X } from "lucide-react";
+import { useState, useTransition } from "react";
+import { BookOpenText, ImagePlus, Loader2, Plus, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,8 +22,14 @@ const stylePalette = [
 ];
 
 function BookCover({ chapter }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const wordLabel =
     chapter.wordCount > 0 ? `${chapter.wordCount} kata` : "Belum ada kata";
+
+  function openChapter() {
+    startTransition(() => router.push(chapter.href));
+  }
 
   return (
     <article className="mobile-feed-card group flex h-full snap-start snap-always flex-col bg-background p-5 transition duration-300 sm:min-h-[28rem] sm:rounded-3xl sm:bg-card sm:p-5 sm:shadow-sm sm:ring-1 sm:ring-border/40 sm:hover:-translate-y-1 sm:hover:shadow-xl sm:hover:shadow-foreground/5">
@@ -38,8 +44,18 @@ function BookCover({ chapter }) {
 
       <div className="flex flex-1 items-center justify-center py-8">
         <div
+          role="button"
+          tabIndex={0}
+          aria-label={`Buka ${chapter.subtitle}`}
+          onClick={openChapter}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              openChapter();
+            }
+          }}
           className={cn(
-            "mobile-feed-cover relative h-[58svh] max-h-[28rem] w-[68vw] max-w-[18rem] overflow-hidden rounded-l-md rounded-r-2xl shadow-2xl shadow-foreground/15 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-foreground/25 sm:h-60 sm:w-40",
+            "mobile-feed-cover relative h-[58svh] max-h-[28rem] w-[68vw] max-w-[18rem] cursor-pointer overflow-hidden rounded-l-md rounded-r-2xl shadow-2xl shadow-foreground/15 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-foreground/25 sm:h-60 sm:w-40",
             chapter.cover
           )}
         >
@@ -69,12 +85,22 @@ function BookCover({ chapter }) {
           <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/35" />
           <div className="absolute inset-x-4 bottom-4 flex translate-y-4 flex-col gap-2 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
             <Button asChild variant="outline">
-              <Link href={chapter.href}>Lihat detail</Link>
+              <Link href={chapter.href} onClick={(event) => event.stopPropagation()}>
+                Lihat detail
+              </Link>
             </Button>
             <Button asChild>
-              <Link href={chapter.quizHref}>Quiz</Link>
+              <Link href={chapter.quizHref} onClick={(event) => event.stopPropagation()}>
+                Quiz
+              </Link>
             </Button>
           </div>
+
+          {isPending ? (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40">
+              <Loader2 className="size-7 animate-spin text-white" />
+            </div>
+          ) : null}
         </div>
       </div>
 

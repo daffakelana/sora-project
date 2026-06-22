@@ -52,7 +52,8 @@ export function AppNavigation({ profile }) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur-xl">
+    <>
+      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur-xl">
       <nav
         aria-label="Main navigation"
         className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-5 py-4 sm:px-8"
@@ -117,6 +118,7 @@ export function AppNavigation({ profile }) {
           </Button>
         </div>
       </nav>
+      </header>
 
       <div
         className={cn(
@@ -142,6 +144,7 @@ export function AppNavigation({ profile }) {
             isMenuOpen ? "translate-y-0" : "translate-y-full"
           )}
         >
+          <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border" />
           <div className="mb-5 flex items-center justify-between">
             <div>
               <p className="font-serif text-xl font-medium tracking-tight">
@@ -212,6 +215,6 @@ export function AppNavigation({ profile }) {
           </div>
         </div>
       </div>
-    </header>
+    </>
   )
 }
