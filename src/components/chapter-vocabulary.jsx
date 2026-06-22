@@ -30,30 +30,68 @@ const ALIGN_COLORS = [
   "#65a30d",
 ];
 
-// Render satu baris kalimat dengan tiap kata diberi warna sesuai pasangannya.
-function AlignedLine({ tokens }) {
+// Satu baris kalimat: tiap kata berpasangan bisa diklik untuk menyorot
+// pasangannya (di kedua bahasa). `activeGroup` = group yang sedang disorot.
+function AlignedLine({ tokens, activeGroup, onToggle }) {
   return (
-    <span className="leading-7">
+    <span className="leading-8">
       {tokens.map((token, index) => {
         if (!token.group) {
           return (
-            <span key={index} className="mr-1">
+            <span key={index} className="mr-1 text-muted-foreground">
               {token.text}
             </span>
           );
         }
         const color = ALIGN_COLORS[(token.group - 1) % ALIGN_COLORS.length];
+        const isActive = activeGroup === token.group;
+        const dimmed = activeGroup !== null && !isActive;
         return (
-          <span
+          <button
+            type="button"
             key={index}
-            className="mr-1 rounded px-1 font-medium"
-            style={{ backgroundColor: `${color}22`, color }}
+            onClick={() => onToggle(token.group)}
+            className="mr-1 cursor-pointer rounded px-1 font-medium transition"
+            style={{
+              backgroundColor: isActive ? color : `${color}22`,
+              color: isActive ? "#ffffff" : color,
+              opacity: dimmed ? 0.35 : 1,
+            }}
           >
             {token.text}
-          </span>
+          </button>
         );
       })}
     </span>
+  );
+}
+
+// Pasangan baris Jerman + Indonesia yang berbagi sorotan klik.
+function AlignedPair({ aligned }) {
+  const [activeGroup, setActiveGroup] = useState(null);
+  const toggle = (group) =>
+    setActiveGroup((current) => (current === group ? null : group));
+
+  return (
+    <>
+      <p className="font-medium">
+        <AlignedLine
+          tokens={aligned.german}
+          activeGroup={activeGroup}
+          onToggle={toggle}
+        />
+      </p>
+      <p className="mt-1 text-sm">
+        <AlignedLine
+          tokens={aligned.indonesian}
+          activeGroup={activeGroup}
+          onToggle={toggle}
+        />
+      </p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Ketuk sebuah kata untuk menyorot pasangannya.
+      </p>
+    </>
   );
 }
 
@@ -813,23 +851,21 @@ export function ChapterVocabulary({ chapter, initialWords }) {
                             AI generated
                           </p>
                         ) : null}
-                        <p className="font-medium leading-6">
-                          {aligned ? (
-                            <AlignedLine tokens={aligned.german} />
-                          ) : (
-                            <HighlightedSentence
-                              sentence={example.german}
-                              word={selectedWord}
-                            />
-                          )}
-                        </p>
-                        <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                          {aligned ? (
-                            <AlignedLine tokens={aligned.indonesian} />
-                          ) : (
-                            example.indonesian
-                          )}
-                        </p>
+                        {aligned ? (
+                          <AlignedPair aligned={aligned} />
+                        ) : (
+                          <>
+                            <p className="font-medium leading-6">
+                              <HighlightedSentence
+                                sentence={example.german}
+                                word={selectedWord}
+                              />
+                            </p>
+                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                              {example.indonesian}
+                            </p>
+                          </>
+                        )}
 
                         {!aligned ? (
                           <Button
