@@ -307,11 +307,33 @@ export function HomeBooks({ chapters, userName }) {
           </Button>
         </div>
 
-        <div className="mobile-feed h-full snap-y snap-mandatory overflow-y-auto overscroll-contain sm:grid sm:h-auto sm:grid-cols-2 sm:gap-2 sm:overflow-visible lg:grid-cols-4">
-          {styledChapters.map((chapter) => (
-            <BookCover key={chapter.href + chapter.title} chapter={chapter} />
-          ))}
-        </div>
+        {styledChapters.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center px-6 text-center sm:h-auto sm:rounded-3xl sm:border sm:border-dashed sm:bg-card sm:py-20">
+            <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <BookOpenText className="size-8" />
+            </div>
+            <h2 className="mt-5 font-serif text-2xl font-medium tracking-tight">
+              Belum ada bab
+            </h2>
+            <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+              Mulai koleksi kosakatamu — buat bab pertama sekarang.
+            </p>
+            <Button
+              type="button"
+              className="mt-6"
+              onClick={() => setIsPanelOpen(true)}
+            >
+              <Plus className="size-4" />
+              Tambah bagian
+            </Button>
+          </div>
+        ) : (
+          <div className="mobile-feed h-full snap-y snap-mandatory overflow-y-auto overscroll-contain sm:grid sm:h-auto sm:grid-cols-2 sm:gap-2 sm:overflow-visible lg:grid-cols-4">
+            {styledChapters.map((chapter) => (
+              <BookCover key={chapter.href + chapter.title} chapter={chapter} />
+            ))}
+          </div>
+        )}
       </section>
 
       <Button

@@ -37,6 +37,7 @@ export async function addChapter({ subtitle, description }) {
     subtitle: `Bab ${position}`,
     description: description || "Belum ada deskripsi.",
     position,
+    owner_id: user.id,
   });
 
   if (error) {

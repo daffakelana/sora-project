@@ -39,6 +39,7 @@ export async function addWord(chapterSlug, word) {
       sentence_after: word.sentence?.after ?? "",
       sentence_translation: word.sentence?.translation ?? word.indonesian,
       created_by: user.id,
+      owner_id: user.id,
     })
     .select("id")
     .single();
